@@ -1,7 +1,8 @@
 AV 番号去重编码
 =========================
 
-找出重复番号, 输出csv,清晰管理, 清理磁盘空间
+This code is designed and optimized for the economizing-hard-drive-users
+who are tired of managing their movies with desination index manually. You can easily locate the duplication and delete it immediately.
 
 ## Highlight(to be continue)
 
