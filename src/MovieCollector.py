@@ -2,13 +2,16 @@ import os
 import re
 import csv
 
+defaultReg = "^[a-zA-Z]{3,7}(|-)[0-9]{3,5}"
+
 class MovieCollector:
-    def __init__(self, pathList, showDuplicate):
+    def __init__(self, pathList, showDuplicate, regEx = defaultReg):
         self.path_list = pathList
         self.showDuplicate = showDuplicate
+        self.regStr = regEx
 
     def createCSV(self, list):
-        print('creating csv......')
+        print('creating csv...')
         fileName = 'REPORT.csv'
         full_path = os.path.join(".", fileName)
 
@@ -25,10 +28,9 @@ class MovieCollector:
                 })
 
     def addToList(self, list, name, dir):
-        regStr = "^[a-zA-Z]{3,7}(|-)[0-9]{3,5}"
-        p = re.compile(regStr)
+        p = re.compile(self.regStr)
         if p.match(name):
-            shortName = re.search(regStr, name).group(0)
+            shortName = re.search(self.regStr, name).group(0)
             name_grp = re.split('(\d.*)', shortName)
             list.append({
                 "c": name_grp[0],
@@ -44,7 +46,7 @@ class MovieCollector:
     def start(self):
         list = []
         for cwd in self.path_list:
-            print('analysizing directory: %s ...' % (cwd))
+            print('analysizing directory(%s)...' % (cwd))
 
             for root, dirs, files in os.walk(cwd):
                 if len(dirs) < 1:
@@ -77,4 +79,3 @@ class MovieCollector:
 
         self.createCSV(list)
         print('finished!')
-        return list

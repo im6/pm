@@ -11,15 +11,22 @@ who are tired of managing their movies with desination index manually. You can e
 - 清晰管理
 - 清理磁盘空间
 
+## Usage Scenario
+
+- ./abs130/abs130.avi
+- ./abs-130.HD.avi
+
+You could also create your own regExp to filter out whatever naming template you need.
+
 ## How Does It Work?
 
-Copy the src code to the directory of your movie folder. and python it. That's pretty much all you need to do.
-The AV_Report.csv file will output afterward.
+The REPORT.csv file will be generated afterward.
+
 ```
 from src.MovieCollector import MovieCollector
 
 target = ['/movie/path1/', '/movie/path2/', '/movie/path3/']
-inst = MovieCollector(target, showDuplicate = True)
+inst = MovieCollector(target, showDuplicate = True, regEx = "^[a-zA-Z]{3,7}(|-)[0-9]{3,5}")
 # showDuplicate = True shows all the movie list
 inst.start()
 ```
