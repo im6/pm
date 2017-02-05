@@ -12,18 +12,21 @@ class MovieCollector:
 
     def createCSV(self, list):
         print('creating csv......')
-        with open('REPORT.csv', 'w') as csvfile:
-            fieldnames = ['company', 'id']
+        fileName = 'REPORT.csv'
+        os.path.join(".", fileName)
+        with open(fileName, 'w') as csvfile:
+            fieldnames = ['company', 'id', 'path']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             writer.writeheader()
             for oneIndex, oneItem in enumerate(list):
                 writer.writerow({
                     'company': oneItem['c'],
-                    'id': oneItem['i']
+                    'id': oneItem['i'],
+                    'path': oneItem['d']
                 })
 
-    def addToList(self, list, name):
+    def addToList(self, list, name, dir):
         regStr = "^[a-zA-Z]{3,5}(|-)[0-9]{3,5}"
         p = re.compile(regStr)
         #matchResult = p.match(name)
@@ -33,6 +36,7 @@ class MovieCollector:
             list.append({
                 "c": name_grp[0],
                 "i": name_grp[1],
+                "d": dir
             })
 
     def change_format(self, str):
@@ -49,7 +53,7 @@ class MovieCollector:
                     # normal folders
                     fanName0 = os.path.basename(root)
                     fanName = self.change_format(fanName0)
-                    self.addToList(list, fanName)
+                    self.addToList(list, fanName, root)
                 elif len(files) > 1 and len(dirs) > 0:
                     # files without parent folder
                     fanName = os.path.basename(root)
@@ -57,7 +61,7 @@ class MovieCollector:
                         fileName = os.path.splitext(oneFile)[0]
                         if fileName != '.DS_Store':
                             name = self.change_format(os.path.splitext(oneFile)[0])
-                            self.addToList(list, name)
+                            self.addToList(list, name, root)
 
 
         list.sort(key=lambda x: x['c'] + x['i'])
@@ -69,13 +73,10 @@ class MovieCollector:
             for oneIndex, oneItem in enumerate(list):
                 if oneIndex < end and oneItem['c'] == list[oneIndex + 1]['c'] and oneItem['i'] == list[oneIndex + 1]['i']:
                     newResult.append(oneItem)
+                    newResult.append(list[oneIndex + 1])
             print("create duplication list...")
             list = newResult
 
         self.createCSV(list)
         print('finished!')
         return list
-
-target = []
-inst = MovieCollector(target, True)
-inst.start()
