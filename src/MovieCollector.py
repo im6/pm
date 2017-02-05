@@ -2,19 +2,17 @@ import os
 import re
 import csv
 
-
 class MovieCollector:
     def __init__(self, pathList, showDuplicate):
-
         self.path_list = pathList
         self.showDuplicate = showDuplicate
-
 
     def createCSV(self, list):
         print('creating csv......')
         fileName = 'REPORT.csv'
-        os.path.join(".", fileName)
-        with open(fileName, 'w') as csvfile:
+        full_path = os.path.join(".", fileName)
+
+        with open(full_path, 'w') as csvfile:
             fieldnames = ['company', 'id', 'path']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -27,9 +25,8 @@ class MovieCollector:
                 })
 
     def addToList(self, list, name, dir):
-        regStr = "^[a-zA-Z]{3,5}(|-)[0-9]{3,5}"
+        regStr = "^[a-zA-Z]{3,7}(|-)[0-9]{3,5}"
         p = re.compile(regStr)
-        #matchResult = p.match(name)
         if p.match(name):
             shortName = re.search(regStr, name).group(0)
             name_grp = re.split('(\d.*)', shortName)
@@ -43,6 +40,7 @@ class MovieCollector:
         str1 = str.replace("-", "")
         str2 = str1.lower()
         return str2
+
     def start(self):
         list = []
         for cwd in self.path_list:
