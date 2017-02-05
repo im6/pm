@@ -15,6 +15,11 @@ who are tired of managing their movies with desination index manually. You can e
 
 Copy the src code to the directory of your movie folder. and python it. That's pretty much all you need to do.
 The AV_Report.csv file will output afterward.
+```
+target = ['/movie/path1/', '/movie/path2/', '/movie/path3/']
+inst = MovieCollector(target, showDuplicate = True)
+inst.start()
+```
 
 Enjoy!
 
