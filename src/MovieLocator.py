@@ -1,33 +1,15 @@
 import os
 import re
-import csv
 
 default_movie_ext = ['.mp4', '.avi', '.mkv', '.wmv']
 defaultReg = "^[a-zA-Z]{2,8}(|-|_)[0-9]{2,6}"
 defaultReg2 = "^(|1|10)[a-zA-Z]{2,8}(|-|_)[0-9]{2,6}"
 
-class MovieCollector:
-    def __init__(self, pathList, showDuplicate, regEx = defaultReg):
+class MovieLocator:
+    def __init__(self, pathList, movie_name, regEx = defaultReg):
         self.path_list = pathList
-        self.showDuplicate = showDuplicate
+        self.movie_name = movie_name
         self.regStr = regEx
-
-    def createCSV(self, list):
-        print('creating csv...')
-        fileName = 'REPORT.csv'
-        full_path = os.path.join(".", fileName)
-
-        with open(full_path, 'w') as csvfile:
-            fieldnames = ['company', 'id', 'path']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-            writer.writeheader()
-            for oneIndex, oneItem in enumerate(list):
-                writer.writerow({
-                    'company': oneItem['c'],
-                    'id': oneItem['i'],
-                    'path': oneItem['d']
-                })
 
     def addToList(self, list, name, dir):
         shortName = re.search(self.regStr, name).group(0)
@@ -52,6 +34,7 @@ class MovieCollector:
         return ext in default_movie_ext
 
     def start(self):
+        tgt = self.movie_name.split('-')
         list = []
         for cwd in self.path_list:
             print('analysizing directory(%s)...' % (cwd))
@@ -60,7 +43,6 @@ class MovieCollector:
 
                 folder_name = os.path.basename(root)
                 folder_name1 = self.change_format(folder_name)
-
                 if self.check_match(folder_name1):
                     self.addToList(list, folder_name1, root)
                 else:
@@ -74,17 +56,12 @@ class MovieCollector:
 
 
         list.sort(key=lambda x: x['c'] + x['i'])
+        result = filter(lambda x: x['c'] == tgt[0] and x['i'] == tgt[1], list)
+        print('================')
+        if result:
+            for ind, item in enumerate(result):
+                print("%s, %s" %(ind + 1, item['d']))
+        else:
+            print('No Match Result.')
 
-        if self.showDuplicate:
-            print("generating the duplication list: ")
-            newResult = []
-            end = len(list) - 1
-            for oneIndex, oneItem in enumerate(list):
-                if oneIndex < end and oneItem['c'] == list[oneIndex + 1]['c'] and oneItem['i'] == list[oneIndex + 1]['i']:
-                    newResult.append(oneItem)
-                    newResult.append(list[oneIndex + 1])
-            print("create duplication list...")
-            list = newResult
-
-        self.createCSV(list)
-        print('finished!')
+        print('================')
