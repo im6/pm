@@ -28,7 +28,7 @@ from src.MovieCollector import MovieCollector
 
 target = ['/movie/path1/', '/movie/path2/', '/movie/path3/']
 inst = MovieCollector(target, showDuplicate = True, regEx = "^[a-zA-Z]{3,7}(|-)[0-9]{3,5}")
-# showDuplicate = True shows all the movie list
+# showDuplicate = False shows list with all movies
 inst.start()
 ```
 
