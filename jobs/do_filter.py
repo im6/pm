@@ -1,19 +1,18 @@
 from src.FileWalker import FileWalker
 from local.constant_var import paths
 
-class Do_filter():
-    def __init__(self, keyword):
-        walker = FileWalker(paths)
-        list = walker.getList()
 
-        result = filter(lambda x: keyword.lower() in x['m'].lower(), list)
+def do_filter(keyword):
+    walker = FileWalker(paths)
+    list = walker.getList()
 
-        print('================')
-        if result:
-            for ind, item in enumerate(result):
-                print("%s, %s-%s,  %s" % (ind + 1, item['c'], item['i'], item['m']))
-        else:
-            print('No Match Result.')
+    result = filter(lambda x: keyword.lower() in x['m'].lower(), list)
 
-        print('================')
+    print('================')
+    if result:
+        for ind, item in enumerate(result):
+            print("%s, %s-%s,  %s" % (ind + 1, item['c'], item['i'], item['m']))
+    else:
+        print('No Match Result.')
 
+    print('================')
