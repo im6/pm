@@ -7,7 +7,7 @@ defaultReg = "^[a-zA-Z]{2,8}(|-|_)[0-9]{2,6}"
 defaultReg2 = "^(|1|10)[a-zA-Z]{2,8}(|-|_)[0-9]{2,6}"
 
 class FileWalker:
-    def __init__(self, pathList, regEx = defaultReg):
+    def __init__(self, pathList, regEx = defaultReg2):
         self.path_list = pathList
         self.regStr = regEx
 
