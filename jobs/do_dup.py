@@ -1,6 +1,11 @@
 from src.FileWalker import FileWalker
 from local.constant_var import paths
 
+def print_green(str):
+    print('\x1b[1;32;40m' + str + '\x1b[0m')
+
+def print_blue(str):
+    print('\x1b[3;36;40m' + str + '\x1b[0m')
 
 def do_dup():
     walker = FileWalker(paths)
@@ -16,10 +21,10 @@ def do_dup():
             result.append(oneItem)
             result.append(list[oneIndex + 1])
 
-    print('================')
+    print_blue('================')
     if result:
         for ind, item in enumerate(result):
             print("%s, %s-%s,  %s" % (ind + 1, item['c'], item['i'], item['m']))
     else:
-        print('No Dup Result.')
-    print('================')
+        print_green('No Dup Result.')
+    print_blue('================')
