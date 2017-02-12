@@ -24,7 +24,7 @@ def do_dup():
     print_blue('================')
     if result:
         for ind, item in enumerate(result):
-            print("%s, %s-%s,  %s" % (ind + 1, item['c'], item['i'], item['m']))
+            print("%s, %s-%s,  %s" % (ind + 1, item['c'], item['i'], item['r']))
     else:
         print_green('No Dup Result.')
     print_blue('================')

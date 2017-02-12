@@ -6,10 +6,17 @@ def do_csv():
     walker = FileWalker(paths)
     list = walker.getList()
 
+    map = {
+        'company': 'c',
+        'id': 'i',
+        'movie': 'm',
+        'image': 'im',
+        'url': 'r'
+    }
     print("generating the CSV file ... ")
 
     wr = CsvWriter()
-    wr.start({'company': 'c', 'id': 'i', 'movie': 'm', 'image': 'im'}, list)
+    wr.start(map, list)
 
     print('================')
     print('Finished!')

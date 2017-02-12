@@ -1,10 +1,13 @@
 import os
 import re
 import subprocess
+from local.constant_var import company_exception
+
 
 default_movie_ext = ['mp4', 'avi', 'mkv', 'wmv']
 defaultReg = "^[a-zA-Z]{2,8}(|-|_)[0-9]{2,6}"
-defaultReg2 = "^(|1|10)[a-zA-Z]{2,8}(|-|_)[0-9]{2,6}"
+defaultReg2 = "^(" + '|'.join(company_exception) + "|[a-zA-Z]{2,8})(|-|_)[0-9]{2,6}"
+
 
 class FileWalker:
     def __init__(self, pathList, regEx = defaultReg2):
@@ -12,18 +15,36 @@ class FileWalker:
         self.regStr = regEx
 
     def addToList(self, list, name, asset):
-        shortName = re.search(self.regStr, name).group(0)
-        name_grp = re.split('(\d.*)', shortName)
+        name_grp = self.split_sku(name)
         list.append({
             "c": name_grp[0],
             "i": name_grp[1],
             "m": asset['m'],
-            'im': asset['i']
+            'im': asset['im'],
+            'r': asset['r']
         })
+
+    def split_sku(self, name):
+        shortName = re.search(self.regStr, name).group(0)
+        isRegular = True
+        matchStr = None
+
+        for oneExc in company_exception:
+            if oneExc in shortName:
+                isRegular = False
+                matchStr = oneExc
+
+        if isRegular:
+            name_grp = re.split('(\d.*)', shortName)
+        else:
+            name_grp = [matchStr, shortName.replace(matchStr, '')]
+
+        return name_grp
 
     def check_match(self, str):
         p = re.compile(self.regStr)
-        return p.match(str)
+        isMatch = p.match(str)
+        return isMatch
 
     def change_format(self, str):
         str1 = str.replace("-", "")
@@ -39,15 +60,16 @@ class FileWalker:
 
     def getMoviePathInFolder(self, root):
         result = {
-            'm': '',
-            'i': ''
+            'm': [],
+            'im': [],
+            'r': root
         }
         for root, dirs, files in os.walk(root):
             for onef in files:
-                if self.get_ext(onef) in default_movie_ext and not result['m']:
-                    result['m'] = root + '/' + onef
-                elif self.get_ext(onef) == 'jpg' and not result['i']:
-                    result['i'] = root + '/' + onef
+                if self.get_ext(onef) in default_movie_ext:
+                    result['m'].append(onef)
+                elif self.get_ext(onef) == 'jpg':
+                    result['im'].append(onef)
         return result
 
     def open_move(self, path):
@@ -56,24 +78,17 @@ class FileWalker:
     def traverse(self):
         list = []
         for cwd in self.path_list:
-            print('analysizing directory(%s)...' % (cwd))
-
+            print('analysizing dir: %s...' % (cwd))
             for root, dirs, files in os.walk(cwd):
                 folder_name = os.path.basename(root)
                 folder_name1 = self.change_format(folder_name)
                 if self.check_match(folder_name1):
+                    # standard sku folder:
                     asset = self.getMoviePathInFolder(root)
                     self.addToList(list, folder_name1, asset)
                 else:
-                    # looking for the movie instance
-                    for oneFile in files:
-                        if not self.is_movie(oneFile):
-                            continue
-
-                        name = self.change_format(os.path.splitext(oneFile)[0])
-                        if self.check_match(name):
-                            self.addToList(list, name, {'m': root + '/' + oneFile, 'i': None})
-
+                    # not big company product
+                    continue
         return list
 
     def getList(self):

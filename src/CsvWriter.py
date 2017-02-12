@@ -6,7 +6,7 @@ class CsvWriter:
         pass
     def start(self, map, list):
         fileName = 'REPORT.csv'
-        full_path = os.path.join("../", fileName)
+        full_path = os.path.join("./", fileName)
         fieldnames = []
 
         print('creating csv...')
