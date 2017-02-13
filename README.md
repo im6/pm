@@ -1,4 +1,4 @@
-AV 番号去重编码
+电影番号SKU去重
 =========================
 
 This code is designed and optimized for the economizing-hard-drive-users
@@ -14,7 +14,6 @@ who are tired of managing their movies with desination index manually. You can e
 ## Usage Scenario
 
 - ./abs130/abs130.avi
-- ./abs-130.HD.avi
 
 You could also create your own regExp to filter out whatever naming template you need.
 
@@ -22,23 +21,29 @@ You could also create your own regExp to filter out whatever naming template you
 
 The REPORT.csv file will be generated afterward.
 
-for MovieCollector:
+1, You have to create your /local/constant_var.py file with following template:
 ```
-from src.MovieCollector import MovieCollector
+paths = [
+    '/movie/path1/',
+    '/movie/path2/',
+    '/movie/path3/'
+]
 
-target = ['/movie/path1/', '/movie/path2/', '/movie/path3/']
-inst = MovieCollector(target, showDuplicate = True, regEx = "^[a-zA-Z]{3,7}(|-)[0-9]{3,5}")
-# showDuplicate = False shows list with all movies
-inst.start()
+company_exception = [
+    '10musume',
+    '1pondo',
+    '1000giri',
+]
 ```
 
-for MovieLocator:
-```
-from src.MovieLocator import MovieLocator
 
-target = ['/movie/path1/', '/movie/path2/', '/movie/path3/']
-inst = MovieLocator(target, movie_name='abs-130')   # search keyword with hyphen
-inst.start()
+2, run command line
+
+```
+python app.py dup  # find out duplication sku number movies
+python app.py open abs130 # open the movie with native player
+python app.py filter abs # search the keyword, and you could select index to preview it
+python app.py csv # get all the movie list into local csv file
 ```
 
 Enjoy!

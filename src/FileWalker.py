@@ -19,8 +19,8 @@ class FileWalker:
         list.append({
             "c": name_grp[0],
             "i": name_grp[1],
-            "m": asset['m'],
-            'im': asset['im'],
+            "m": '|-|'.join(asset['m']),
+            'im': '|-|'.join(asset['im']),
             'r': asset['r']
         })
 
