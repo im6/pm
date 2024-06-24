@@ -11,6 +11,15 @@ const DedupHome = () => {
         console.log("xx data", data);
       });
   };
+  const onClickCombine = () => {
+    fetch("/api/combine", {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("xx data", data);
+      });
+  };
 
   return (
     <div className="min-h-screen p-5">
@@ -23,9 +32,15 @@ const DedupHome = () => {
         />
         <button
           onClick={onClickScan}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3"
         >
           Scan
+        </button>
+        <button
+          onClick={onClickCombine}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Combine to folder
         </button>
       </div>
     </div>
