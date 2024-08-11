@@ -1,14 +1,18 @@
 "use client";
-import { useEffect } from "react";
+import { useState } from "react";
+import PmTable from "../../components/PmTable/index";
 
 const DedupHome = () => {
+  const [data, setData] = useState();
+  const [scanDisable, setScanDisable] = useState(false);
   const onClickScan = () => {
-    fetch("/api/dedup", {
+    setScanDisable(true);
+    fetch("/api/scan", {
       method: "POST",
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log("xx data", data);
+      .then(() => {
+        setScanDisable(false);
       });
   };
   const onClickCombine = () => {
@@ -17,32 +21,81 @@ const DedupHome = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        // todo
+      });
+  };
+  const onClickCreatePid = () => {
+    fetch("/api/create-id", {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => {
         console.log("xx data", data);
+      });
+  };
+
+  const onClickShowAll = () => {
+    fetch("/api/show-all", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setData(res.data);
+      });
+  };
+
+  const onClickShowDup = () => {
+    fetch("/api/show-dup", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setData(res.data);
       });
   };
 
   return (
     <div className="min-h-screen p-5">
-      <div className="m-4 flex">
+      <div className="my-4 flex">
         <input
-          className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-30 mr-5"
+          className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-30 mr-3"
           id="searchBox"
           type="text"
           placeholder="keyword"
         />
         <button
           onClick={onClickScan}
+          disabled={scanDisable}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3 disabled:bg-slate-300"
+        >
+          {scanDisable ? <span>&#128336;</span> : "Scan"}
+        </button>
+        <button
+          onClick={onClickShowAll}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3"
         >
-          Scan
+          Show All
+        </button>
+        <button
+          onClick={onClickShowDup}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3"
+        >
+          Show Dup
         </button>
         <button
           onClick={onClickCombine}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3"
         >
           Combine to folder
         </button>
+        <button
+          onClick={onClickCreatePid}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Create PM ID
+        </button>
       </div>
+      {<PmTable rows={data} />}
     </div>
   );
 };

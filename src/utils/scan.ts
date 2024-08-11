@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { v4 } from "uuid";
 import { FileSystemEntry } from "../types";
 
 const namePattern = /^[a-zA-Z]+(\d)+/;
@@ -15,7 +16,6 @@ export const extractPubSeq = (endName: string) => {
   let pubDone = false;
   let seq = "";
   let seqDone = false;
-
   for (let i = 0; i < endName.length; i += 1) {
     if (!pubDone) {
       if (/[a-zA-Z]/.test(endName[i])) {
@@ -35,14 +35,13 @@ export const extractPubSeq = (endName: string) => {
       break;
     }
   }
-  return [publisher, seq];
+  return [publisher, seq.replace(/^0+/, "")];
 };
 
 export const getUniq = (data: FileSystemEntry[]) => {
   return data.map((v: FileSystemEntry) => {
     const lastPart = getEndFolderName(v.path);
     const res = extractPubSeq(lastPart);
-    console.log(res);
     return res;
   });
 };
@@ -59,7 +58,22 @@ export const scanDirectory = (dirPath: string): FileSystemEntry[] => {
         if (stat && stat.isDirectory()) {
           const folderName = getEndFolderName(filePath);
           if (namePattern.test(folderName)) {
-            results.push({ path: filePath, type: "directory" });
+            try {
+              const pmid = fs.readFileSync(`${filePath}/pmid.txt`, "utf8");
+              const pubSeq = extractPubSeq(folderName);
+              results.push({
+                sid: `${pubSeq[0]}${pubSeq[1]}`,
+                path: filePath,
+                type: "directory",
+                id: pmid,
+              });
+            } catch (error) {
+              results.push({
+                sid: folderName,
+                path: filePath,
+                type: "directory",
+              });
+            }
           } else {
             results = results.concat(scanDirectory(filePath));
           }
@@ -116,4 +130,33 @@ export const combineToFolder = (dirPath: string) => {
       }
     }
   });
+};
+
+export const addIdToDirectory = (dirPath: string) => {
+  const a = scanDirectory(dirPath);
+  for (let i = 0; i < a.length; i += 1) {
+    const fileName: string = "pmid.txt";
+    const idFilePath: string = path.join(a[i].path, fileName);
+    fs.access(
+      idFilePath,
+      fs.constants.F_OK,
+      (err: NodeJS.ErrnoException | null) => {
+        if (err && err.code === "ENOENT") {
+          fs.writeFile(
+            idFilePath,
+            v4(),
+            (err: NodeJS.ErrnoException | null) => {
+              if (err) {
+                console.error("Error creating file:", err);
+              } else {
+                console.log(`File created successfully: ${a[i].path}`);
+              }
+            }
+          );
+        } else {
+          // existed, do nothing
+        }
+      }
+    );
+  }
 };

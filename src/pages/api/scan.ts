@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { combineToFolder } from "../../utils/scan";
+import { scanDirectory } from "../../utils/scan";
+import { saveToDb } from "../../utils/db";
 import { getConfig } from "@/utils/config";
 
 type ResponseData = {
@@ -13,8 +14,13 @@ export default function handler(
 ) {
   if (req.method === "POST") {
     const config = getConfig();
-    config.dirs.forEach((v: string) => combineToFolder(v));
-    res.status(200).json({ data: [], error: false });
+    let scanRes: any[] = [];
+    config.dirs.forEach((v: string) => {
+      const movs = scanDirectory(v);
+      scanRes = scanRes.concat(movs);
+    });
+    saveToDb(scanRes);
+    res.status(200).json({ data: 1, error: false });
   } else {
     res.status(200).json({ data: [], error: false });
   }

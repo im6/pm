@@ -1,60 +1,72 @@
-import { Movie } from "../types";
+import { PmTrieNode, FileSystemEntry } from "@/types";
+import { extractPubSeq } from "./scan";
 
-class TrieNode {
-  children: any;
-  isEnd: boolean;
-  detail?: Movie;
-
-  constructor() {
-    this.children = {};
-    this.isEnd = false;
-  }
-}
-
-class Trie {
-  root: TrieNode;
-  constructor() {
-    this.root = new TrieNode();
+export const updatePmTrie = (oneFs: FileSystemEntry, oldTree: PmTrieNode) => {
+  if (!oneFs.sid) {
+    console.log(oneFs.sid!, "oneFs.sid!", JSON.stringify(oneFs));
   }
 
-  insert(word: string, movie: Movie) {
-    let node = this.root;
-    for (let i = 0; i < word.length; i++) {
-      let char = word[i];
-      if (!node.children[char]) {
-        node.children[char] = new TrieNode();
-      }
-      node = node.children[char];
+  const [alphaPart, numPart] = extractPubSeq(oneFs.sid!);
+  const newTree = JSON.parse(JSON.stringify(oldTree));
+  let currentNode = newTree;
+
+  for (let i = 0; i < alphaPart.length; i += 1) {
+    if (!currentNode.children[alphaPart[i]]) {
+      currentNode.children[alphaPart[i]] = { children: {} };
     }
-    node.isEnd = true;
-    node.detail = movie;
+    currentNode = currentNode.children[alphaPart[i]];
   }
-
-  search(word: string) {
-    let node = this.root;
-
-    for (let i = 0; i < word.length; i++) {
-      let char = word[i];
-
-      if (!node.children[char]) {
-        return false;
-      }
-      node = node.children[char];
+  for (let i = 0; i < numPart.length; i += 1) {
+    if (!currentNode.children[numPart[i]]) {
+      currentNode.children[numPart[i]] = { children: {} };
     }
-    return node.isEnd;
+    currentNode = currentNode.children[numPart[i]];
   }
-
-  startsWith(prefix: string) {
-    let node = this.root;
-    for (let i = 0; i < prefix.length; i++) {
-      let char = prefix[i];
-      if (!node.children[char]) {
-        return false;
+  if (!Array.isArray(currentNode.p)) {
+    currentNode.p = [oneFs];
+    return newTree;
+  } else {
+    const existedSid: FileSystemEntry | undefined = currentNode.p.find(
+      (v: FileSystemEntry) => v.id === oneFs.id
+    );
+    if (existedSid) {
+      if (existedSid.path !== oneFs.path) {
+        console.log("exited, but folder moved to new directory");
+        currentNode.p = currentNode.p.filter(
+          (v: FileSystemEntry) => v.id !== oneFs.id
+        );
+        currentNode.p.push(oneFs);
+      } else {
+        // exited and no change
       }
-      node = node.children[char];
+    } else {
+      currentNode.p.push(oneFs);
+      console.log("duplication detected.");
     }
-    return true;
+    return newTree;
   }
-}
+};
 
-export default Trie;
+const traverse = (tree: PmTrieNode) => {
+  let res: any[] = [];
+
+  const trv = (node: PmTrieNode) => {
+    if (node.p) {
+      res = res.concat(node);
+    }
+    Object.keys(node.children).forEach((char) => {
+      trv(node.children[char]);
+    });
+  };
+  trv(tree);
+  return res;
+};
+
+export const getDup = (tree: PmTrieNode) => {
+  const flat = traverse(tree);
+  const dup = flat
+    .filter((v) => v.p.length > 1)
+    .map((v) => v.p)
+    .flat();
+  return dup;
+};

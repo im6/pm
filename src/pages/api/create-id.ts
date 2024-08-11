@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { scanDirectory, getUniq } from "../../utils/scan";
-import { saveToDb } from "../../utils/db";
+import { addIdToDirectory } from "../../utils/scan";
+import { getConfig } from "@/utils/config";
 
 type ResponseData = {
   data: any;
@@ -12,10 +12,9 @@ export default function handler(
   res: NextApiResponse<ResponseData>
 ) {
   if (req.method === "POST") {
-    const scanRes = scanDirectory("/Users/zijianguo/Downloads/temp");
-    const scan1 = getUniq(scanRes);
-    saveToDb(`${scan1[0]}${scan1[1]}`);
-    res.status(200).json({ data: scan1, error: false });
+    const config = getConfig();
+    config.dirs.forEach((v: string) => addIdToDirectory(v));
+    res.status(200).json({ data: [], error: false });
   } else {
     res.status(200).json({ data: [], error: false });
   }
