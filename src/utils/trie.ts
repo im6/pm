@@ -64,9 +64,18 @@ const traverse = (tree: PmTrieNode) => {
 
 export const getDup = (tree: PmTrieNode) => {
   const flat = traverse(tree);
-  const dup = flat
-    .filter((v) => v.p.length > 1)
-    .map((v) => v.p)
-    .flat();
+  const dup = flat.filter((v) => v.p.length > 1).map((v) => v.p);
   return dup;
+};
+
+export const searchNode = (tree: PmTrieNode, word: string) => {
+  let cur = tree;
+  for (let i = 0; i < word.length; i += 1) {
+    if (word[i] in cur.children) {
+      cur = cur.children[word[i]];
+    } else {
+      return false;
+    }
+  }
+  return cur;
 };

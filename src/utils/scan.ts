@@ -3,12 +3,13 @@ import * as path from "path";
 import { v4 } from "uuid";
 import { FileSystemEntry } from "../types";
 
-const namePattern = /^[a-zA-Z]+(\d)+/;
+const namePattern = /^[a-zA-Z]+(\d)+(\W|)*$/;
 
 const getEndFolderName = (fullPath: string) => {
   const pathMembers = fullPath.split("/");
   const folderName = pathMembers[pathMembers.length - 1];
-  return folderName;
+  const shortName = folderName.replace(/_.+/, "");
+  return shortName;
 };
 
 export const extractPubSeq = (endName: string) => {
@@ -36,14 +37,6 @@ export const extractPubSeq = (endName: string) => {
     }
   }
   return [publisher, seq.replace(/^0+/, "")];
-};
-
-export const getUniq = (data: FileSystemEntry[]) => {
-  return data.map((v: FileSystemEntry) => {
-    const lastPart = getEndFolderName(v.path);
-    const res = extractPubSeq(lastPart);
-    return res;
-  });
 };
 
 export const scanDirectory = (dirPath: string): FileSystemEntry[] => {

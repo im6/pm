@@ -30,7 +30,6 @@ const writeTrieFile = (filePath: string, data: string) => {
 export const initialDb = () => {
   for (let i = 0; i < initials.length; i += 1) {
     const data = readOrCreateFile(getFilePath(initials[i]), initialContent);
-    console.log(data);
   }
 };
 
