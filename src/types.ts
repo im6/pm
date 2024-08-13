@@ -5,6 +5,7 @@ export type PmNode = {
   path: string;
   type: "file" | "directory";
   node?: string;
+  isMounted?: boolean;
 };
 
 export type PmTrieNode = {

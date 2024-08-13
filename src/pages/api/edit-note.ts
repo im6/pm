@@ -1,4 +1,8 @@
-import { readDb, editNoteFromTreeNode, writeToDb } from "@/utils/db";
+import {
+  editNoteFromTreeNode,
+  readOneCharDb,
+  writeOneCharDb,
+} from "@/utils/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData = {
@@ -11,9 +15,10 @@ export default function handler(
   res: NextApiResponse<ResponseData>
 ) {
   if (req.method === "POST") {
-    const tree = readDb();
-    const newTree = editNoteFromTreeNode(tree, JSON.parse(req.body));
-    writeToDb(newTree);
+    const parsedBody = JSON.parse(req.body);
+    const tree = readOneCharDb(parsedBody.data.sid[0]);
+    const newTree = editNoteFromTreeNode(tree, parsedBody);
+    writeOneCharDb(parsedBody.data.sid[0], newTree);
     res.status(200).json({ data: [], error: false });
   } else {
     res.status(200).json({ data: [], error: false });

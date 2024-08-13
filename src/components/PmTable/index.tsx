@@ -1,16 +1,17 @@
 "use client";
-import React from "react";
 
 const PmTable = ({
   rows,
   onDelete,
   onEditNote,
   onOpenFolder,
+  onClickTable,
 }: {
   rows: any[];
   onDelete?: any;
   onEditNote?: any;
   onOpenFolder?: any;
+  onClickTable?: any;
 }) => {
   const handleDelete = (thisRow: any) => () => {
     onDelete(thisRow);
@@ -23,7 +24,7 @@ const PmTable = ({
   };
   if (!Array.isArray(rows)) return null;
   return (
-    <div className="relative overflow-x-auto">
+    <div className="relative overflow-x-auto" onClick={onClickTable}>
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
@@ -55,6 +56,7 @@ const PmTable = ({
               </th>
               <td className="px-6 py-4">{v.size}</td>
               <td className="px-6 py-4">
+                {v.isMounted && <span className="mr-1">&#129513;</span>}
                 {v.path} <span className="text-lime-600 ml-2">{v.note}</span>
               </td>
               <td>

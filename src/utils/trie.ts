@@ -45,12 +45,12 @@ export const updatePmTrie = (oneFs: PmNode, oldTree: PmTrieNode) => {
   }
 };
 
-const traverse = (tree: PmTrieNode) => {
+const traverseForDup = (tree: PmTrieNode) => {
   let res: any[] = [];
 
   const trv = (node: PmTrieNode) => {
-    if (node.p) {
-      res = res.concat(node);
+    if (node.p && node.p.length > 1) {
+      res.push(node.p);
     }
     Object.keys(node.children).forEach((char) => {
       trv(node.children[char]);
@@ -61,9 +61,7 @@ const traverse = (tree: PmTrieNode) => {
 };
 
 export const getDup = (tree: PmTrieNode) => {
-  const flat = traverse(tree);
-  const dup = flat.filter((v) => v.p.length > 1).map((v) => v.p);
-  return dup;
+  return traverseForDup(tree);
 };
 
 export const searchNode = (tree: PmTrieNode, word: string) => {
@@ -76,4 +74,30 @@ export const searchNode = (tree: PmTrieNode, word: string) => {
     }
   }
   return cur;
+};
+
+const traverseForAvailable = (tree: PmTrieNode, mounted: any) => {
+  let res: any[] = [];
+
+  const trv = (node: PmTrieNode) => {
+    if (node.p && node.p.length > 0) {
+      node.p.forEach((v: PmNode) => {
+        if (
+          (/^\/Volumes\/disc/.test(v.path) && mounted[v.path[14]]) ||
+          !/^\/Volumes\/disc/.test(v.path)
+        ) {
+          res.push(v);
+        }
+      });
+    }
+    Object.keys(node.children).forEach((char) => {
+      trv(node.children[char]);
+    });
+  };
+  trv(tree);
+  return res;
+};
+
+export const getAvailableNodes = (tree: PmTrieNode, mounted: any) => {
+  return traverseForAvailable(tree, mounted);
 };

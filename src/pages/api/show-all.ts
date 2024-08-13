@@ -1,5 +1,6 @@
-import { getConfig } from "@/utils/config";
-import { scanDirectory } from "@/utils/scan";
+import { findMountedDisc } from "@/utils/config";
+import { readDb } from "@/utils/db";
+import { getAvailableNodes } from "@/utils/trie";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type ResponseData = {
@@ -12,13 +13,10 @@ export default function handler(
   res: NextApiResponse<ResponseData>
 ) {
   if (req.method === "GET") {
-    const config = getConfig();
-    let scanRes: any[] = [];
-    config.dirs.forEach((v: string) => {
-      const movs = scanDirectory(v);
-      scanRes = scanRes.concat(movs);
-    });
-    res.status(200).json({ data: scanRes, error: false });
+    const tree = readDb();
+    const mounted = findMountedDisc();
+    const available = getAvailableNodes(tree, mounted);
+    res.status(200).json({ data: available, error: false });
   } else {
     res.status(200).json({ data: [], error: false });
   }

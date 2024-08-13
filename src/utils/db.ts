@@ -85,7 +85,8 @@ export const editNoteFromTreeNode = (tree: PmTrieNode, payload: any) => {
   const { data: nodeToGo, note } = payload;
   const newTree = JSON.parse(JSON.stringify(tree));
   let node = newTree;
-  for (let i = 0; i < nodeToGo.sid?.length; i += 1) {
+  // start from 1 because it is one char file
+  for (let i = 1; i < nodeToGo.sid?.length; i += 1) {
     node = node.children[nodeToGo.sid[i]];
   }
   node.p = node.p.map((v: PmNode) => {
