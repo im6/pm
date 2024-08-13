@@ -1,4 +1,4 @@
-import { FileSystemEntry, PmTrieNode } from "@/types";
+import { PmNode, PmTrieNode } from "@/types";
 import * as fs from "fs";
 import * as path from "path";
 import { updatePmTrie } from "./trie";
@@ -50,16 +50,16 @@ export const readDb = () => {
   return mem;
 };
 
-const writeToDb = (newTree: PmTrieNode) => {
+export const writeToDb = (newTree: PmTrieNode) => {
   for (let i = 0; i < initials.length; i += 1) {
     writeOneCharDb(initials[i], newTree.children[initials[i]]);
   }
 };
 
-export const syncDb = (movies: FileSystemEntry[]) => {
+export const syncDb = (nodes: PmNode[]) => {
   const oldTree = readDb();
   let newTree = JSON.parse(JSON.stringify(oldTree));
-  movies.forEach((v) => {
+  nodes.forEach((v) => {
     if (v.type === "directory") {
       newTree = updatePmTrie(v, newTree);
     }
@@ -67,6 +67,39 @@ export const syncDb = (movies: FileSystemEntry[]) => {
   writeToDb(newTree);
 };
 
-export const saveToDb = (movies: FileSystemEntry[]) => {
-  syncDb(movies);
+export const saveToDb = (nodes: PmNode[]) => {
+  syncDb(nodes);
+};
+
+export const removePmFromTrie = (nodeToGo: PmNode, tree: PmTrieNode) => {
+  const newTree = JSON.parse(JSON.stringify(tree));
+  let node = newTree;
+  for (let i = 0; i < nodeToGo.sid?.length; i += 1) {
+    node = node.children[nodeToGo.sid[i]];
+  }
+  node.p = node.p.filter((v: PmNode) => v.id !== nodeToGo.id);
+  return newTree;
+};
+
+export const editNoteFromTreeNode = (tree: PmTrieNode, payload: any) => {
+  const { data: nodeToGo, note } = payload;
+  const newTree = JSON.parse(JSON.stringify(tree));
+  let node = newTree;
+  for (let i = 0; i < nodeToGo.sid?.length; i += 1) {
+    node = node.children[nodeToGo.sid[i]];
+  }
+  node.p = node.p.map((v: PmNode) => {
+    if (v.id !== nodeToGo.id) return v;
+    if (!note) {
+      const newNode = JSON.parse(JSON.stringify(v));
+      delete newNode.note;
+      return newNode;
+    } else {
+      return {
+        ...v,
+        note,
+      };
+    }
+  });
+  return newTree;
 };

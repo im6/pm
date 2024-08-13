@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 import { v4 } from "uuid";
-import { FileSystemEntry } from "../types";
+import { PmNode } from "../types";
+import numeral from "numeral";
 
 const namePattern = /^[a-zA-Z]+(\d)+(\W|)*$/;
 
@@ -39,8 +40,29 @@ export const extractPubSeq = (endName: string) => {
   return [publisher, seq.replace(/^0+/, "")];
 };
 
-export const scanDirectory = (dirPath: string): FileSystemEntry[] => {
-  let results: FileSystemEntry[] = [];
+export const getFolderSize = (folderPath: string) => {
+  let totalSize = 0;
+
+  const files = fs.readdirSync(folderPath);
+
+  files.forEach((file) => {
+    const filePath = path.join(folderPath, file);
+    const stats = fs.statSync(filePath);
+
+    if (stats.isDirectory()) {
+      // will not go down
+    } else {
+      totalSize += stats.size;
+    }
+  });
+  if (folderPath === "/Volumes/disc02/p/star-s0/佐藤エル/ECB128C") {
+    console.log("zuo teng", totalSize);
+  }
+  return numeral(totalSize).format("0.00b");
+};
+
+export const scanDirectory = (dirPath: string): PmNode[] => {
+  let results: PmNode[] = [];
 
   try {
     const list = fs.readdirSync(dirPath);
@@ -59,6 +81,7 @@ export const scanDirectory = (dirPath: string): FileSystemEntry[] => {
                 path: filePath,
                 type: "directory",
                 id: pmid,
+                size: getFolderSize(filePath),
               });
             } catch (error) {
               results.push({
@@ -88,6 +111,9 @@ export const scanDirectory = (dirPath: string): FileSystemEntry[] => {
 };
 
 export const combineToFolder = (dirPath: string) => {
+  if (!fs.existsSync(dirPath)) {
+    return;
+  }
   const list = fs.readdirSync(dirPath);
   const uniqImg: any = {};
   const uniqVideo: any = {};

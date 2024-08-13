@@ -1,9 +1,10 @@
-import { PmTrieNode, FileSystemEntry } from "@/types";
+import { PmTrieNode, PmNode } from "@/types";
 import { extractPubSeq } from "./scan";
 
-export const updatePmTrie = (oneFs: FileSystemEntry, oldTree: PmTrieNode) => {
+export const updatePmTrie = (oneFs: PmNode, oldTree: PmTrieNode) => {
   if (!oneFs.sid) {
     console.log(oneFs.sid!, "oneFs.sid!", JSON.stringify(oneFs));
+    return;
   }
 
   const [alphaPart, numPart] = extractPubSeq(oneFs.sid!);
@@ -26,18 +27,15 @@ export const updatePmTrie = (oneFs: FileSystemEntry, oldTree: PmTrieNode) => {
     currentNode.p = [oneFs];
     return newTree;
   } else {
-    const existedSid: FileSystemEntry | undefined = currentNode.p.find(
-      (v: FileSystemEntry) => v.id === oneFs.id
+    const existedSid: PmNode | undefined = currentNode.p.find(
+      (v: PmNode) => v.id === oneFs.id
     );
     if (existedSid) {
-      if (existedSid.path !== oneFs.path) {
-        console.log("exited, but folder moved to new directory");
-        currentNode.p = currentNode.p.filter(
-          (v: FileSystemEntry) => v.id !== oneFs.id
-        );
+      if (existedSid.path !== oneFs.path || existedSid.size !== oneFs.size) {
+        currentNode.p = currentNode.p.filter((v: PmNode) => v.id !== oneFs.id);
         currentNode.p.push(oneFs);
       } else {
-        // exited and no change
+        // existed and no change
       }
     } else {
       currentNode.p.push(oneFs);
