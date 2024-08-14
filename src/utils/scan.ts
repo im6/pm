@@ -179,3 +179,13 @@ export const addIdToDirectory = (dirPath: string) => {
     );
   }
 };
+
+export const deleteNodeDirectory = (folderPath: string) => {
+  fs.rm(folderPath, { recursive: true, force: true }, (err) => {
+    if (err) {
+      console.error("Error deleting folder:", err);
+    } else {
+      console.log(`Folder ${folderPath} has been deleted`);
+    }
+  });
+};

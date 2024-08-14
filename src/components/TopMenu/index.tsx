@@ -43,6 +43,16 @@ const TopMenu = () => {
           placeholder="keyword"
         />
       </a>
+      <a href="/dup">
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3">
+          Show Dup
+        </button>
+      </a>
+      <a href="/display-all">
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3">
+          Show All
+        </button>
+      </a>
       <button
         onClick={onClickScan}
         disabled={scanDisable}
@@ -50,16 +60,6 @@ const TopMenu = () => {
       >
         {scanDisable ? <span>&#128336;</span> : "Scan"}
       </button>
-      <a href="/display-all">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3">
-          Show All
-        </button>
-      </a>
-      <a href="/dup">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3">
-          Show Dup
-        </button>
-      </a>
       <button
         onClick={onClickCombine}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3"

@@ -6,13 +6,26 @@ const DupHome = () => {
   const [data, setData] = useState();
   const [selected, setSelected] = useState();
   const handleDelete = (data: any) => {
+    const confirmed = window.confirm(`Delete ${data.sid}, ${data.path}`);
+    if (!confirmed) {
+      return;
+    }
     fetch("/api/delete-one", {
       method: "POST",
       body: JSON.stringify({ data }),
     })
       .then((res) => res.json())
       .then(() => {
-        alert("Delete success.");
+        setData((oldData) => {
+          if (!oldData) return;
+          return oldData.map((v0) => {
+            if (v0[0].sid !== data.sid) {
+              return v0;
+            } else {
+              return v0.filter((v1) => v1.id !== data.id);
+            }
+          });
+        });
       });
   };
 
@@ -76,12 +89,12 @@ const DupHome = () => {
       {Array.isArray(data) &&
         data.map((v, k) => (
           <div
+            key={v[0].sid}
             className={`my-3 ${
               selected === k ? "border border-blue-700 border-2" : ""
             }`}
           >
             <PmTable
-              key={k}
               rows={v}
               onDelete={handleDelete}
               onEditNote={handleEditNode}
