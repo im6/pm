@@ -45,12 +45,12 @@ const TopMenu = () => {
       </a>
       <a href="/dup">
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3">
-          Show Dup
+          Dup
         </button>
       </a>
       <a href="/display-all">
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3">
-          Show All
+          All
         </button>
       </a>
       <button
