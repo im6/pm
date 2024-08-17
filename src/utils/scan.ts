@@ -55,9 +55,6 @@ export const getFolderSize = (folderPath: string) => {
       totalSize += stats.size;
     }
   });
-  if (folderPath === "/Volumes/disc02/p/star-s0/佐藤エル/ECB128C") {
-    console.log("zuo teng", totalSize);
-  }
   return numeral(totalSize).format("0.00b");
 };
 
@@ -74,30 +71,23 @@ export const scanDirectory = (dirPath: string): PmNode[] => {
           const folderName = getEndFolderName(filePath);
           if (namePattern.test(folderName)) {
             try {
-              const pmid = fs.readFileSync(`${filePath}/pmid.txt`, "utf8");
+              const pmid = getPmIdFromDirectory(filePath);
               const pubSeq = extractPubSeq(folderName);
               results.push({
+                id: pmid,
                 sid: `${pubSeq[0]}${pubSeq[1]}`,
+                size: getFolderSize(filePath),
                 path: filePath,
                 type: "directory",
-                id: pmid,
-                size: getFolderSize(filePath),
               });
             } catch (error) {
-              results.push({
-                sid: folderName,
-                path: filePath,
-                type: "directory",
-              });
+              console.error(error, "Scan error");
             }
           } else {
             results = results.concat(scanDirectory(filePath));
           }
         } else {
-          const folderName = getEndFolderName(filePath);
-          if (namePattern.test(folderName)) {
-            results.push({ path: filePath, type: "file" });
-          }
+          // not folder, don't do anything so far
         }
       } catch (error: any) {
         console.error(`Error accessing ${filePath}: ${error.message}`);
@@ -105,6 +95,7 @@ export const scanDirectory = (dirPath: string): PmNode[] => {
     });
   } catch (error: any) {
     console.error(`Error reading directory ${dirPath}: ${error.message}`);
+    return [];
   }
 
   return results;
@@ -151,41 +142,41 @@ export const combineToFolder = (dirPath: string) => {
   });
 };
 
-export const addIdToDirectory = (dirPath: string) => {
-  const a = scanDirectory(dirPath);
-  for (let i = 0; i < a.length; i += 1) {
-    const fileName: string = "pmid.txt";
-    const idFilePath: string = path.join(a[i].path, fileName);
-    fs.access(
-      idFilePath,
-      fs.constants.F_OK,
-      (err: NodeJS.ErrnoException | null) => {
-        if (err && err.code === "ENOENT") {
-          fs.writeFile(
-            idFilePath,
-            v4(),
-            (err: NodeJS.ErrnoException | null) => {
-              if (err) {
-                console.error("Error creating file:", err);
-              } else {
-                console.log(`File created successfully: ${a[i].path}`);
-              }
-            }
-          );
+export const getPmIdFromDirectory = (dirPath: string): string => {
+  const fileName: string = "pmid.txt";
+  const idFilePath: string = path.join(dirPath, fileName);
+  try {
+    const accessErr = fs.accessSync(idFilePath, fs.constants.F_OK);
+    if (accessErr) {
+      console.error("pmid detect error");
+      return "";
+    }
+    const id = fs.readFileSync(idFilePath, "utf8");
+    return id;
+  } catch (error: any) {
+    if (error.code === "ENOENT") {
+      // not existed, will create new PmID
+      const newId = v4();
+      fs.writeFile(idFilePath, newId, (err: NodeJS.ErrnoException | null) => {
+        if (err) {
+          console.error("Error creating file:", err);
         } else {
-          // existed, do nothing
+          console.log(`File created successfully: ${dirPath}`);
         }
-      }
-    );
+      });
+      return newId;
+    } else {
+      console.error("pmid detect error");
+      return "";
+    }
   }
 };
 
 export const deleteNodeDirectory = (folderPath: string) => {
-  fs.rm(folderPath, { recursive: true, force: true }, (err) => {
-    if (err) {
-      console.error("Error deleting folder:", err);
-    } else {
-      console.log(`Folder ${folderPath} has been deleted`);
-    }
-  });
+  try {
+    fs.rmSync(folderPath, { recursive: true });
+    return { data: "remove successfully.", error: false };
+  } catch (error) {
+    return { data: null, error: "directory is already removed." };
+  }
 };

@@ -7,30 +7,37 @@ const initials = "abcdefghijklmnopqrstuvwxyz";
 const getFilePath = (i: string) =>
   path.join(process.cwd(), `../pm-store/${i}.json`);
 
-const initialContent = JSON.stringify({ children: {} });
-
 const readOrCreateFile = (filePath: string, initialContent: string) => {
   if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, initialContent, "utf8");
-    console.log(`File created at ${filePath}`);
+    fs.writeFile(filePath, initialContent, (err) => {
+      if (err) {
+        console.error(`File created error at ${filePath}`);
+      } else {
+        console.log(`File created at ${filePath}`);
+      }
+    });
+    return JSON.parse(initialContent);
   }
-
   const fileContents = fs.readFileSync(filePath, "utf8");
   return JSON.parse(fileContents);
 };
 
 const writeTrieFile = (filePath: string, data: string) => {
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, initialContent, "utf8");
-    console.log(`File created at ${filePath}`);
+  if (fs.existsSync(filePath)) {
+    fs.writeFile(filePath, data, (err) => {
+      if (err) {
+        console.error("file write error", filePath);
+      }
+    });
+    return;
   }
-  fs.writeFileSync(filePath, data);
-};
-
-export const initialDb = () => {
-  for (let i = 0; i < initials.length; i += 1) {
-    const data = readOrCreateFile(getFilePath(initials[i]), initialContent);
-  }
+  fs.writeFile(filePath, data, (err) => {
+    if (err) {
+      console.error("file write error", filePath);
+    } else {
+      console.log(`File created at ${filePath}`);
+    }
+  });
 };
 
 export const readOneCharDb = (oneChar: string) => {
@@ -74,7 +81,8 @@ export const saveToDb = (nodes: PmNode[]) => {
 export const removePmFromTrie = (nodeToGo: PmNode, tree: PmTrieNode) => {
   const newTree = JSON.parse(JSON.stringify(tree));
   let node = newTree;
-  for (let i = 0; i < nodeToGo.sid?.length; i += 1) {
+  // one char tree only
+  for (let i = 1; i < nodeToGo.sid.length; i += 1) {
     node = node.children[nodeToGo.sid[i]];
   }
   node.p = node.p.filter((v: PmNode) => v.id !== nodeToGo.id);
@@ -86,7 +94,7 @@ export const editNoteFromTreeNode = (tree: PmTrieNode, payload: any) => {
   const newTree = JSON.parse(JSON.stringify(tree));
   let node = newTree;
   // start from 1 because it is one char file
-  for (let i = 1; i < nodeToGo.sid?.length; i += 1) {
+  for (let i = 1; i < nodeToGo.sid.length; i += 1) {
     node = node.children[nodeToGo.sid[i]];
   }
   node.p = node.p.map((v: PmNode) => {

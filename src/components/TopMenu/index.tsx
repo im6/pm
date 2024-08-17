@@ -23,15 +23,6 @@ const TopMenu = () => {
         // todo
       });
   };
-  const onClickCreatePid = () => {
-    fetch("/api/create-id", {
-      method: "POST",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("xx data", data);
-      });
-  };
 
   return (
     <div className="m-4 flex">
@@ -65,12 +56,6 @@ const TopMenu = () => {
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-3"
       >
         Combine to folder
-      </button>
-      <button
-        onClick={onClickCreatePid}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Create PM ID
       </button>
     </div>
   );

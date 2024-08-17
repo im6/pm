@@ -52,7 +52,7 @@ const PmTable = ({
                 scope="row"
                 className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
               >
-                {v.sid}
+                <span title={v.id}>{v.sid}</span>
               </th>
               <td className="px-6 py-4">{v.size}</td>
               <td className="px-6 py-4">

@@ -7,7 +7,6 @@ import PmTable from "../../../components/PmTable/index";
 const Search = () => {
   const [data, setData] = useState();
   const { keyword } = useParams();
-  console.log(keyword);
   const handleDelete = (data: any) => {
     const confirmed = window.confirm(`Are you sure? ${data.sid}`);
     if (!confirmed) {

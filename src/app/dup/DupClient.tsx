@@ -15,7 +15,10 @@ const DupClient = () => {
       body: JSON.stringify({ data }),
     })
       .then((res) => res.json())
-      .then(() => {
+      .then(({ error }) => {
+        if (error) {
+          alert(error);
+        }
         setData((oldData) => {
           if (!oldData) return;
           return oldData.map((v0) => {

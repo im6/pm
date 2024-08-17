@@ -1,10 +1,9 @@
 export type PmNode = {
-  id?: string;
-  sid?: string;
+  id: string;
+  sid: string;
   size?: string;
   path: string;
   type: "file" | "directory";
-  node?: string;
   isMounted?: boolean;
 };
 
