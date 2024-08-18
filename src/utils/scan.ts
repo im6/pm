@@ -29,6 +29,8 @@ export const extractPubSeq = (endName: string) => {
     if (pubDone && !seqDone) {
       if (/\d/.test(endName[i])) {
         seq += endName[i];
+      } else if (i < endName.length - 1) {
+        continue;
       } else {
         seqDone = true;
       }

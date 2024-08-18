@@ -17,7 +17,7 @@ export default function handler(
     const { keyword } = JSON.parse(req.body);
     const updateSearch = extractPubSeq(keyword);
     const tree = readDb();
-    const c = searchNode(tree, keyword);
+    const c = searchNode(tree, `${updateSearch[0]}${updateSearch[1]}`);
     const data = c ? c.p : [];
     const mounted = findMountedDisc();
     data?.forEach((v) => {
