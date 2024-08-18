@@ -6,7 +6,7 @@ const Home = () => {
   const [search, setSearch] = useState("");
   const handleSubmit = (evt: any) => {
     evt.preventDefault();
-    window.location.href = `/search/${search}`;
+    window.location.href = `/search/${search.replace(/[^a-zA-Z\d]/g, "")}`;
   };
   const handleSearchChange = (evt: any) => {
     setSearch(evt.target.value);
