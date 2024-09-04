@@ -13,7 +13,7 @@ export default function handler(
 ) {
   if (req.method === "POST") {
     const config = getConfig();
-    config.dirs.forEach((v: string) => combineToFolder(v));
+    config.combine.forEach((v: string) => combineToFolder(v));
     res.status(200).json({ data: [], error: false });
   } else {
     res.status(200).json({ data: [], error: false });

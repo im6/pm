@@ -29,10 +29,12 @@ export const extractPubSeq = (endName: string) => {
     if (pubDone && !seqDone) {
       if (/\d/.test(endName[i])) {
         seq += endName[i];
-      } else if (i < endName.length - 1) {
-        continue;
       } else {
-        seqDone = true;
+        if (seq.length === 0) {
+          continue;
+        } else {
+          seqDone = true;
+        }
       }
     }
     if (pubDone && seqDone) {
@@ -111,7 +113,13 @@ export const combineToFolder = (dirPath: string) => {
   const uniqImg: any = {};
   const uniqVideo: any = {};
   list.forEach((file) => {
+    if (!/.mp4/.test(file) && !/.jpg/.test(file)) {
+      return;
+    }
     const pubSeq = extractPubSeq(file);
+    if (!pubSeq[0] || !pubSeq[1]) {
+      return;
+    }
     const normalizeFile = `${pubSeq[0]}${pubSeq[1]}`;
     if (/.mp4/.test(file)) {
       uniqVideo[normalizeFile] = file;
