@@ -27,11 +27,15 @@ export const updatePmTrie = (oneFs: PmNode, oldTree: PmTrieNode) => {
     currentNode.p = [oneFs];
     return newTree;
   } else {
-    const existedSid: PmNode | undefined = currentNode.p.find(
+    const existedDupId: PmNode | undefined = currentNode.p.find(
       (v: PmNode) => v.id === oneFs.id
     );
-    if (existedSid) {
-      if (existedSid.path !== oneFs.path || existedSid.size !== oneFs.size) {
+    if (existedDupId) {
+      // node id existed, but path or node size diff, update
+      if (
+        existedDupId.path !== oneFs.path ||
+        existedDupId.size !== oneFs.size
+      ) {
         currentNode.p = currentNode.p.filter((v: PmNode) => v.id !== oneFs.id);
         currentNode.p.push(oneFs);
       } else {
