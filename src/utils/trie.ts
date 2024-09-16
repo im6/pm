@@ -37,7 +37,10 @@ export const updatePmTrie = (oneFs: PmNode, oldTree: PmTrieNode) => {
         existedDupId.size !== oneFs.size
       ) {
         currentNode.p = currentNode.p.filter((v: PmNode) => v.id !== oneFs.id);
-        currentNode.p.push(oneFs);
+        currentNode.p.push({
+          ...oneFs,
+          note: existedDupId.note,
+        });
       } else {
         // existed and no change
       }
