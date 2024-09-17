@@ -16,8 +16,8 @@ export default function handler(
     const config = getConfig();
     let scanRes: any[] = [];
     config.dirs.forEach((v: string) => {
-      const movs = scanDirectory(v);
-      scanRes = scanRes.concat(movs);
+      const scanned = scanDirectory(v);
+      scanRes = scanRes.concat(scanned);
     });
     saveToDb(scanRes);
     res.status(200).json({ data: 1, error: false });

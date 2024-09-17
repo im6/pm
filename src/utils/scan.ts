@@ -111,7 +111,7 @@ export const combineToFolder = (dirPath: string) => {
   }
   const list = fs.readdirSync(dirPath);
   const uniqImg: any = {};
-  const uniqVideo: any = {};
+  const uniqMain: any = {};
   list.forEach((file) => {
     if (!/.mp4/.test(file) && !/.jpg/.test(file)) {
       return;
@@ -122,14 +122,14 @@ export const combineToFolder = (dirPath: string) => {
     }
     const normalizeFile = `${pubSeq[0]}${pubSeq[1]}`;
     if (/.mp4/.test(file)) {
-      uniqVideo[normalizeFile] = file;
+      uniqMain[normalizeFile] = file;
     }
     if (/.jpg/.test(file)) {
       uniqImg[normalizeFile] = file;
     }
     if (
       uniqImg.hasOwnProperty(normalizeFile) &&
-      uniqVideo.hasOwnProperty(normalizeFile)
+      uniqMain.hasOwnProperty(normalizeFile)
     ) {
       const newFolderPath = path.join(dirPath, normalizeFile);
       if (!fs.existsSync(newFolderPath)) {
@@ -142,7 +142,7 @@ export const combineToFolder = (dirPath: string) => {
           path.join(dirPath, normalizeFile, `${normalizeFile}.jpg`)
         );
         fs.renameSync(
-          path.join(dirPath, uniqVideo[normalizeFile]),
+          path.join(dirPath, uniqMain[normalizeFile]),
           path.join(dirPath, normalizeFile, `${normalizeFile}.mp4`)
         );
       } catch (error) {
