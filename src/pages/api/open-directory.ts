@@ -12,13 +12,8 @@ export default function handler(
 ) {
   if (req.method === "POST") {
     const pathToOpen = JSON.parse(req.body).data.path;
-    exec(`open ${pathToOpen}`, (err) => {
-      if (err) {
-        res.status(200).json({ data: [], error: true });
-      } else {
-        res.status(200).json({ data: [], error: false });
-      }
-    });
+    exec(`open ${pathToOpen}`);
+    res.status(200).json({ data: [], error: false });
   } else {
     res.status(200).json({ data: [], error: false });
   }
