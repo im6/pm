@@ -56,7 +56,9 @@ const PmTable = ({
               </th>
               <td className="px-6 py-4">{v.size}</td>
               <td className="px-6 py-4">
-                {v.isMounted && <span className="mr-1">&#129513;</span>}
+                <div className="inline-block min-w-6">
+                  {v.isMounted && <span className="mr-1">&#129513;</span>}
+                </div>
                 {v.path} <span className="text-lime-600 ml-2">{v.note}</span>
               </td>
               <td>
