@@ -46,7 +46,7 @@ export const updatePmTrie = (oneFs: PmNode, oldTree: PmTrieNode) => {
       }
     } else {
       currentNode.p.push(oneFs);
-      console.log("duplication detected.");
+      console.log(`duplication detected. ${oneFs.sid}`);
     }
     return newTree;
   }
