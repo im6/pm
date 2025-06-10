@@ -23,7 +23,7 @@ export default function handler(
     data?.forEach((v) => {
       v.isMounted = mounted[v.path[14]];
     });
-    res.status(200).json({ data, error: true });
+    res.status(200).json({ data, error: (data || []).length === 0 });
   } else {
     res.status(200).json({ data: [], error: false });
   }
