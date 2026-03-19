@@ -59,7 +59,7 @@ export const getFolderSize = (folderPath: string) => {
       totalSize += stats.size;
     }
   });
-  return numeral(totalSize).format("0.00b");
+  return [numeral(totalSize).format("0.00b"), totalSize];
 };
 
 export const scanDirectory = (dirPath: string): PmNode[] => {
@@ -77,10 +77,12 @@ export const scanDirectory = (dirPath: string): PmNode[] => {
             try {
               const pmid = getPmIdFromDirectory(filePath);
               const pubSeq = extractPubSeq(folderName);
+              const [size, sizeNum] = getFolderSize(filePath);
               results.push({
                 id: pmid,
                 sid: `${pubSeq[0]}${pubSeq[1]}`,
-                size: getFolderSize(filePath),
+                size,
+                sizeNum,
                 path: filePath,
                 type: "directory",
               });
@@ -139,11 +141,11 @@ export const combineToFolder = (dirPath: string) => {
       try {
         fs.renameSync(
           path.join(dirPath, uniqImg[normalizeFile]),
-          path.join(dirPath, normalizeFile, `${normalizeFile}.jpg`)
+          path.join(dirPath, normalizeFile, `${normalizeFile}.jpg`),
         );
         fs.renameSync(
           path.join(dirPath, uniqMain[normalizeFile]),
-          path.join(dirPath, normalizeFile, `${normalizeFile}.mp4`)
+          path.join(dirPath, normalizeFile, `${normalizeFile}.mp4`),
         );
       } catch (error) {
         console.error(`Error on moving ${normalizeFile}`);

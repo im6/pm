@@ -2,6 +2,7 @@ export type PmNode = {
   id: string;
   sid: string;
   size?: string;
+  sizeNum?: number;
   path: string;
   type: "file" | "directory";
   isMounted?: boolean;

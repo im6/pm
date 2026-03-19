@@ -10,12 +10,15 @@ type ResponseData = {
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData>,
 ) {
   if (req.method === "GET") {
     const tree = readDb();
     const mounted = findMountedDisc();
     const available = getAvailableNodes(tree, mounted);
+
+    available.sort((a: any, b: any) => parseFloat(b.size) - parseFloat(a.size));
+
     res.status(200).json({ data: available, error: false });
   } else {
     res.status(200).json({ data: [], error: false });
